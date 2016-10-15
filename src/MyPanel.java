@@ -16,10 +16,10 @@ public class MyPanel extends JPanel
 	private static final int TOTAL_COLUMNS = 10;
 	private static final int TOTAL_ROWS = 11;   //Last row has only one cell
 
-	//******************ADDED 4 PROJECT*****************************
+	//******************ADDED 4 PROJECT***************************
 	private static final int NUMBER_OF_MINES = 10;
 	public final int NUMBER_SAFE_SQUARES = 71;
-	//******************ADDED 4 PROJECT*****************************
+	//******************ADDED 4 PROJECT***************************
 
 	public int x = -1;
 	public int y = -1;
