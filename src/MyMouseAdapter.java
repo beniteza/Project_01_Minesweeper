@@ -1,4 +1,3 @@
-import java.awt.Color; 
 import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
@@ -13,8 +12,6 @@ import javax.swing.JFrame;
  */
 public class MyMouseAdapter extends MouseAdapter 
 {
-	private Color newColor = null; 
-
 	/**
 	 * A mouse button was pressed.
 	 */
@@ -164,40 +161,20 @@ public class MyMouseAdapter extends MouseAdapter
 						//Pressed a mine
 						else if (myPanel.hasMine(myPanel.mouseDownGridX, myPanel.mouseDownGridY))
 						{
-							this.newColor = Color.BLACK;
-
-							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = newColor;
-							myPanel.repaint();
-
-							//Displays lost message and ends game
-							//myPanel.gameLost();  //**********UNCOMMENT****************
+							//Reveals all squares and mines, displays lost message and ends game
+							myPanel.gameLost(); 
 						}
 						//Square has no mine
 						else 
 						{
-							//If the square was already uncovered
-							if(myPanel.isUncovered(myPanel.mouseDownGridX, myPanel.mouseDownGridY))
-							{
-								//Do nothing
-							}
-							//If it was not uncovered
-							else
-							{
-								this.newColor = Color.GRAY;
+							//uncovers the square
+							myPanel.uncover(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
+							
+							//Uncovers adjacent squares if the contain no mines
+							myPanel.uncoverAdjancentSquares(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
 
-								//Uncovers the square
-								myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = newColor;
-								myPanel.repaint();
-								
-								//Marks the square as uncovered
-								myPanel.uncover(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
-								
-								//Uncovers adjacent squares if the contain no mines
-								myPanel.uncoverAdjancentSquares(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
-
-								//Check if all safe squares have been uncovered and wins if they are
-								myPanel.gameWon(); //*********UNCOMMENT*********
-							}
+							//Check if all safe squares have been uncovered and wins if they are
+							myPanel.gameWon(); //*********UNCOMMENT*********
 						}
 					}
 				}
@@ -259,18 +236,7 @@ public class MyMouseAdapter extends MouseAdapter
 						//Right click flags possible mines with red color
 						else
 						{
-							//Checks if the square was already uncovered
-							if(myPanel.isUncovered(myPanel.mouseDownGridX, myPanel.mouseDownGridY))
-							{
-								//Do nothing since it already is uncovered
-							}
-							else
-							{
-								this.newColor = Color.RED; //The color red represents a flag
-
-								myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = newColor;
-								myPanel.repaint();
-							}
+							myPanel.flag(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
 						}
 					}
 				}
