@@ -22,6 +22,7 @@ public class MyPanel extends JPanel
 	private static final int TOTAL_ROWS = 11;   //Last row has only one cell
 	private static final int NUMBER_OF_MINES = 10; //Total mines
 	private static final int NUMBER_SAFE_SQUARES = 71; //Total safe squares
+	private int safeSquareCounter = 0; //Hold the number of current uncovered squares
 	//This array holds the 'coordinates' of the cells that have mines
 	private int[][] squaresWithMines = new int[TOTAL_ROWS - 2][TOTAL_COLUMNS - 1]; //Should be 9x9
 	//This array holds the 'coordinates' of the cells that were uncovered
@@ -91,6 +92,7 @@ public class MyPanel extends JPanel
 				rowValue = randomNumber.nextInt(8);
 				columnValue = randomNumber.nextInt(8);
 			}
+			//Temp: for debug purposes
 			System.out.println("X:" + (rowValue + 1) + ", " + "Y:" + (columnValue + 1));
 
 			squaresWithMines[rowValue][columnValue] = 1;
@@ -146,19 +148,8 @@ public class MyPanel extends JPanel
 				}
 			}
 		}
-	
-		//***********************REMOVE SOON***********************************
-		//Stores the number of surrounding mines in its array
-		//MAYBE THIS COULD BE A METHOD OR PART OF hasSurroundingMines********
-//		int numberOfMines = this.hasSurroundingMines(this.mouseDownGridX, this.mouseDownGridY);
-//		if(numberOfMines != 0 && !isUncovered(this.mouseDownGridX-1, this.mouseDownGridY-1) 
-//									&& !this.hasMine(this.mouseDownGridX-1, this.mouseDownGridY-1))
-//		{
-//			surroundingMines[this.mouseDownGridX][this.mouseDownGridY] = numberOfMines;
-//		}
-		//***********************REMOVE SOON***********************************
 		
-		//Loop draws numbers on squares
+		//Loop draws number of surrounding mines on squares
 		for(int x = 0; x <= 9; x++)
 		{
 			for(int y = 0; y <= 9; y++)
@@ -173,7 +164,7 @@ public class MyPanel extends JPanel
 			}
 		}
 		
-
+		System.out.println("safeSquaresCount: " + this.safeSquareCounter); //Temp for debug
 	}
 	
 	/**
@@ -212,13 +203,8 @@ public class MyPanel extends JPanel
 	 * @param y Column value
 	 * @return Returns true if there are adjacent mines and false if not
 	 */
-	public int hasSurroundingMines(int x, int y)
-	{
-		/*
-		 * Como todavia estoy usando los gray cells, en vez de el limite menor ser 0, es 1
-		 * Ver como poder usar 'hasMine' to return true instead of doing that aparte
-		 */
-		
+	public int getSurroundingMines(int x, int y)
+	{	
 		int mines = 0;
 		//Loops checks if there are mines in any the of adjacent squares
 		for(int i = x-1; i <= x+1; i++)
@@ -253,6 +239,7 @@ public class MyPanel extends JPanel
 		if(!isUncovered(x, y))
 		{
 			this.uncoveredSquares[x][y] = 1;
+			this.safeSquareCounter++;
 		}
 	}
 
@@ -263,6 +250,12 @@ public class MyPanel extends JPanel
 	 */
 	public void uncoverAdjancentSquares(int x, int y)
 	{
+		int surroundingMines = this.getSurroundingMines(x,y); //How many mines are adjacent of the selected square.
+		System.out.println("Surrounding mines: " + surroundingMines); //Temp: for debug purposes
+		
+		//If there are no adjacent mines, all adjacent squares will be uncovered
+		if(surroundingMines == 0)
+		{
 			for(int i = x-1; i <= x+1; i++)
 			{
 				for(int j = y-1; j <= y+1; j++)
@@ -274,19 +267,21 @@ public class MyPanel extends JPanel
 						this.repaint();
 						
 						//Checks and returns how many mines are around the newly uncovered square
-						this.hasSurroundingMines(i, j);
+						this.getSurroundingMines(i, j);
 					}
 				}
 			}
+		}
+
 	}
 
 	/**
 	 * Exits the program if all safe squares were uncovered.
 	 * @param safeSuqareCounter The number of uncovered squares
 	 */
-	public void gameWon(int safeSuqareCounter)
+	public void gameWon()
 	{
-		if(safeSuqareCounter == NUMBER_SAFE_SQUARES)
+		if(this.safeSquareCounter == NUMBER_SAFE_SQUARES)
 		{
 			JOptionPane.showMessageDialog(null, "YOU WIN!");
 			System.exit(0);

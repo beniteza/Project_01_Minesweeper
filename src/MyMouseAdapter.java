@@ -14,7 +14,6 @@ import javax.swing.JFrame;
 public class MyMouseAdapter extends MouseAdapter 
 {
 	private Color newColor = null; 
-	private int safeSuqareCounter = 0; //Holds how many safe cells have been uncovered
 
 	/**
 	 * A mouse button was pressed.
@@ -192,20 +191,12 @@ public class MyMouseAdapter extends MouseAdapter
 								
 								//Marks the square as uncovered
 								myPanel.uncover(myPanel.mouseDownGridX-1, myPanel.mouseDownGridY-1);
-
-								//Prints how many mines are surrounding the square
-								int surroundingMines = myPanel.hasSurroundingMines(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
-								System.out.println("Surrounding mines: " + surroundingMines);
 								
-								//Uncovers adjacent squares if there are no mines
-								if(surroundingMines == 0)
-								{
-									myPanel.uncoverAdjancentSquares(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
-								}
+								//Uncovers adjacent squares if the contain no mines
+								myPanel.uncoverAdjancentSquares(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
 
-								safeSuqareCounter++; //Keeps count of the number of uncovered squares
 								//Check if all safe squares have been uncovered and wins if they are
-								myPanel.gameWon(safeSuqareCounter); //*********UNCOMMENT*********
+								myPanel.gameWon(); //*********UNCOMMENT*********
 							}
 						}
 					}
