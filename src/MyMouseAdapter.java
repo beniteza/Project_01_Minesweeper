@@ -162,7 +162,7 @@ public class MyMouseAdapter extends MouseAdapter
 							//Do nothing
 						}
 						//Pressed a mine
-						else if (myPanel.hasMine(myPanel.mouseDownGridX-1, myPanel.mouseDownGridY-1))
+						else if (myPanel.hasMine(myPanel.mouseDownGridX, myPanel.mouseDownGridY))
 						{
 							this.newColor = Color.BLACK;
 
@@ -170,13 +170,13 @@ public class MyMouseAdapter extends MouseAdapter
 							myPanel.repaint();
 
 							//Displays lost message and ends game
-							myPanel.gameLost();  //**********UNCOMMENT****************
+							//myPanel.gameLost();  //**********UNCOMMENT****************
 						}
 						//Square has no mine
 						else 
 						{
 							//If the square was already uncovered
-							if(myPanel.isUncovered(myPanel.mouseDownGridX-1, myPanel.mouseDownGridY-1))
+							if(myPanel.isUncovered(myPanel.mouseDownGridX, myPanel.mouseDownGridY))
 							{
 								//Do nothing
 							}
@@ -190,7 +190,7 @@ public class MyMouseAdapter extends MouseAdapter
 								myPanel.repaint();
 								
 								//Marks the square as uncovered
-								myPanel.uncover(myPanel.mouseDownGridX-1, myPanel.mouseDownGridY-1);
+								myPanel.uncover(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
 								
 								//Uncovers adjacent squares if the contain no mines
 								myPanel.uncoverAdjancentSquares(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
@@ -260,7 +260,7 @@ public class MyMouseAdapter extends MouseAdapter
 						else
 						{
 							//Checks if the square was already uncovered
-							if(myPanel.isUncovered(myPanel.mouseDownGridX-1, myPanel.mouseDownGridY-1))
+							if(myPanel.isUncovered(myPanel.mouseDownGridX, myPanel.mouseDownGridY))
 							{
 								//Do nothing since it already is uncovered
 							}

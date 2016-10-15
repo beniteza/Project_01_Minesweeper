@@ -23,12 +23,18 @@ public class MyPanel extends JPanel
 	private static final int NUMBER_OF_MINES = 10; //Total mines
 	private static final int NUMBER_SAFE_SQUARES = 71; //Total safe squares
 	private int safeSquareCounter = 0; //Hold the number of current uncovered squares
+	
+	/*
+	 * The arrays used for the Minesweeper game are 10x10.
+	 * The gray squares belong to the 0 index in each array.
+	 * The squares used need index 1 though 10 for the game to function.
+	 */
 	//This array holds the 'coordinates' of the cells that have mines
-	private int[][] squaresWithMines = new int[TOTAL_ROWS - 2][TOTAL_COLUMNS - 1]; //Should be 9x9
+	private int[][] squaresWithMines = new int[10][10]; 
 	//This array holds the 'coordinates' of the cells that were uncovered
-	private int[][] uncoveredSquares = new int[TOTAL_ROWS - 2][TOTAL_COLUMNS - 1];
+	private int[][] uncoveredSquares = new int[10][10];
 	//This array holds the number of mines surrounding an uncovered square
-	private int[][] surroundingMines = new int[10][10]; //10x10 to avoid errors while storing and drawing
+	private int[][] surroundingMines = new int[10][10]; 
 
 	public int x = -1;
 	public int y = -1;
@@ -81,19 +87,20 @@ public class MyPanel extends JPanel
 			}
 		}
 
+		//*****************MAKE THIS A METHOD*********************
 		//This randomly selects which cells are going to have mines.
 		Random randomNumber = new Random();
 		for(int i = 0; i < NUMBER_OF_MINES; i++)
 		{
-			int rowValue = randomNumber.nextInt(8);
-			int columnValue = randomNumber.nextInt(8);
+			int rowValue = randomNumber.nextInt(8)+1;
+			int columnValue = randomNumber.nextInt(8)+1;
 			while(hasMine(rowValue, columnValue))
 			{
-				rowValue = randomNumber.nextInt(8);
-				columnValue = randomNumber.nextInt(8);
+				rowValue = randomNumber.nextInt(8)+1;
+				columnValue = randomNumber.nextInt(8)+1;
 			}
 			//Temp: for debug purposes
-			System.out.println("X:" + (rowValue + 1) + ", " + "Y:" + (columnValue + 1));
+			System.out.println("X:" + (rowValue) + ", " + "Y:" + (columnValue));
 
 			squaresWithMines[rowValue][columnValue] = 1;
 		}
@@ -213,7 +220,7 @@ public class MyPanel extends JPanel
 			{
 				if(i > 0 && i <= 9 && j > 0 && j <= 9)
 				{
-					if(this.hasMine(i-1, j-1))
+					if(this.hasMine(i, j))
 					{
 						mines++;
 					}
@@ -221,7 +228,7 @@ public class MyPanel extends JPanel
 			}
 		}
 
-		if(mines != 0 && !this.hasMine(x-1, y-1))
+		if(mines != 0 && !this.hasMine(x, y))
 		{
 			surroundingMines[x][y] = mines;
 		}
@@ -263,7 +270,7 @@ public class MyPanel extends JPanel
 					if(i > 0 && i <= 9 && j > 0 && j <= 9)
 					{
 						this.colorArray[i][j] = Color.GRAY; //Colors squares gray
-						this.uncover(i-1,j-1); //Marks the square as uncovered
+						this.uncover(i,j); //Marks the square as uncovered
 						this.repaint();
 						
 						//Checks and returns how many mines are around the newly uncovered square
