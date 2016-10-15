@@ -156,8 +156,6 @@ public class MyPanel extends JPanel
 				}
 			}
 		}
-
-		System.out.println("safeSquaresCount: " + this.safeSquareCounter); //Temp for debug
 	}
 
 	/**
@@ -175,8 +173,6 @@ public class MyPanel extends JPanel
 				rowValue = randomNumber.nextInt(8)+1;
 				columnValue = randomNumber.nextInt(8)+1;
 			}
-			//Temp: for debug purposes
-			System.out.println("X:" + (rowValue) + ", " + "Y:" + (columnValue));
 
 			squaresWithMines[rowValue][columnValue] = 1;
 		}
@@ -269,7 +265,6 @@ public class MyPanel extends JPanel
 	public void uncoverAdjancentSquares(int x, int y)
 	{
 		int surroundingMines = this.getSurroundingMines(x,y); //How many mines are adjacent of the selected square.
-		System.out.println("Surrounding mines: " + surroundingMines); //Temp: for debug purposes
 
 		//If there are no adjacent mines, all adjacent squares will be uncovered
 		if(surroundingMines == 0)

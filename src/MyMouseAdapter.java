@@ -174,12 +174,11 @@ public class MyMouseAdapter extends MouseAdapter
 							myPanel.uncoverAdjancentSquares(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
 
 							//Check if all safe squares have been uncovered and wins if they are
-							myPanel.gameWon(); //*********UNCOMMENT*********
+							myPanel.gameWon();
 						}
 					}
 				}
 			}
-			myPanel.repaint();
 			break;
 		case 3: //Right mouse button
 			c = e.getComponent();
@@ -241,7 +240,6 @@ public class MyMouseAdapter extends MouseAdapter
 					}
 				}
 			}
-			myPanel.repaint();
 			break;
 
 		default:    //Some other button (2 = Middle mouse button, etc.)
