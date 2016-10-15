@@ -6,6 +6,11 @@ import java.util.Random;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+/**
+ * The MyPanel class creates the grid, squares, and holds the methods used for the Minesweeper game.
+ * @author Axviel Benitez Dorta & Ariel Silva Troche
+ *
+ */
 public class MyPanel extends JPanel 
 {
 	private static final long serialVersionUID = 3426940946811133635L;
@@ -15,11 +20,14 @@ public class MyPanel extends JPanel
 	private static final int INNER_CELL_SIZE = 29;
 	private static final int TOTAL_COLUMNS = 10;
 	private static final int TOTAL_ROWS = 11;   //Last row has only one cell
-
-	//******************ADDED 4 PROJECT***************************
-	private static final int NUMBER_OF_MINES = 10;
-	public final int NUMBER_SAFE_SQUARES = 71;
-	//******************ADDED 4 PROJECT***************************
+	private static final int NUMBER_OF_MINES = 10; //Total mines
+	private static final int NUMBER_SAFE_SQUARES = 71; //Total safe squares
+	//This array holds the 'coordinates' of the cells that have mines
+	private int[][] squaresWithMines = new int[TOTAL_ROWS - 2][TOTAL_COLUMNS - 1]; //Should be 9x9
+	//This array holds the 'coordinates' of the cells that were uncovered
+	private int[][] uncoveredSquares = new int[TOTAL_ROWS - 2][TOTAL_COLUMNS - 1];
+	//This array holds the number of mines surrounding an uncovered square
+	private int[][] surroundingMines = new int[10][10]; //10x10 to avoid errors while storing and drawing
 
 	public int x = -1;
 	public int y = -1;
@@ -27,137 +35,9 @@ public class MyPanel extends JPanel
 	public int mouseDownGridY = 0;
 	public Color[][] colorArray = new Color[TOTAL_COLUMNS][TOTAL_ROWS];
 
-	//******************ADDED 4 PROJECT*****************************
-	/*
-	 * This array holds the 'coordinates' of the cells that have mines
+	/**
+	 * Sets the initial color for the squares and randomly selects which ones will contain mines.
 	 */
-	private int[][] squaresWithMines = new int[TOTAL_ROWS - 2][TOTAL_COLUMNS - 1]; //Should be 9x9
-
-	/*
-	 * This array holds the 'coordinates' of the cells that were uncovered
-	 */
-	private int[][] uncoveredSquares = new int[TOTAL_ROWS - 2][TOTAL_COLUMNS - 1];
-
-	/*
-	 * This method checks if the randomly generated cell already has a mine or not.
-	 */
-	public boolean hasMine(int iKey, int jKey)
-	{
-		if(this.squaresWithMines[iKey][jKey] == 1)
-		{
-			return true;
-		}
-		return false;
-	}
-
-	/*
-	 * This method returns if the game was won or not
-	 */
-	public void gameWon(int safeSuqareCounter)
-	{
-		if(safeSuqareCounter == NUMBER_SAFE_SQUARES)
-		{
-			JOptionPane.showMessageDialog(null, "YOU WIN!");
-			System.exit(0);
-		}
-	}
-
-	/*
-	 * This method returns if the game was lost
-	 */
-	public void gameLost()
-	{
-		//Uncovers every square
-		for(int i = 1; i <= 9; i++)
-		{
-			for(int j = 1; j <= 9; j++)
-			{
-				Color squareColor = Color.GRAY;
-				if(this.hasMine(i-1, j-1))
-				{
-					squareColor = Color.BLACK;
-				}
-				this.colorArray[i][j] = squareColor;
-				this.repaint();
-			}
-		}
-		
-		//Displays lost message and exits program
-		JOptionPane.showMessageDialog(null, "YOU LOSE!");
-		
-		//Stops the program
-		System.exit(0);
-	}
-
-	/*
-	 * This method checks if the cell was already uncovered
-	 */
-	public boolean isUncovered(int x, int y)
-	{
-
-		if(this.uncoveredSquares[x][y] == 1)
-		{
-			return true;
-		}
-		return false;
-	}
-
-	/*
-	 * This method adds cell to uncovered array
-	 */
-	public void uncover(int x, int y)
-	{
-		if(!isUncovered(x, y))
-		{
-			this.uncoveredSquares[x][y] = 1;
-		}
-	}
-
-	/*
-	 * This method returns if there are mines around the clicked cell
-	 */
-	public boolean hasSurroundingMines(int x, int y)
-	{
-		/*
-		 * Como todavia estoy usando los gray cells, en vez de el limite menor ser 0, es 1
-		 * Ver como poder usar 'hasMine' to return true instead of doing that aparte
-		 */
-		for(int i = x-1; i <= x+1; i++)
-		{
-			for(int j = y-1; j <= y+1; j++)
-			{
-				if(i > 0 && i <= 9 && j > 0 && j <= 9)
-				{
-					if(this.hasMine(i-1, j-1))
-					{
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	/*
-	 * This method uncovers all adjacent squares if none of them have mines
-	 */
-	public void uncoverAdjancentSquares(int x, int y)
-	{
-			for(int i = x-1; i <= x+1; i++)
-			{
-				for(int j = y-1; j <= y+1; j++)
-				{
-					if(i > 0 && i <= 9 && j > 0 && j <= 9)
-					{
-						this.colorArray[i][j] = Color.GRAY;
-						this.repaint();
-					}
-				}
-			}
-	}
-
-	//******************ADDED 4 PROJECT*****************************
-
 	public MyPanel() 
 	{   
 		//This is the constructor... this code runs first to initialize
@@ -200,28 +80,26 @@ public class MyPanel extends JPanel
 			}
 		}
 
-		//******************ADDED 4 PROJECT*****************************
-		/*
-		 * This randomly selects which cells are going to have mines.
-		 */
+		//This randomly selects which cells are going to have mines.
 		Random randomNumber = new Random();
 		for(int i = 0; i < NUMBER_OF_MINES; i++)
 		{
-			int iKey = randomNumber.nextInt(8);
-			int jKey = randomNumber.nextInt(8);
-			while(hasMine(iKey, jKey))
+			int rowValue = randomNumber.nextInt(8);
+			int columnValue = randomNumber.nextInt(8);
+			while(hasMine(rowValue, columnValue))
 			{
-				iKey = randomNumber.nextInt(8);
-				jKey = randomNumber.nextInt(8);
+				rowValue = randomNumber.nextInt(8);
+				columnValue = randomNumber.nextInt(8);
 			}
-			System.out.println("X:" + (iKey + 1) + ", " + "Y:" + (jKey + 1));
+			System.out.println("X:" + (rowValue + 1) + ", " + "Y:" + (columnValue + 1));
 
-			squaresWithMines[iKey][jKey] = 1;
+			squaresWithMines[rowValue][columnValue] = 1;
 		}
-		//******************ADDED 4 PROJECT*****************************
-
 	}
 
+	/**
+	 * Draws the grid and squares.
+	 */
 	public void paintComponent(Graphics g) 
 	{
 		super.paintComponent(g);
@@ -268,6 +146,178 @@ public class MyPanel extends JPanel
 				}
 			}
 		}
+	
+		//***********************REMOVE SOON***********************************
+		//Stores the number of surrounding mines in its array
+		//MAYBE THIS COULD BE A METHOD OR PART OF hasSurroundingMines********
+//		int numberOfMines = this.hasSurroundingMines(this.mouseDownGridX, this.mouseDownGridY);
+//		if(numberOfMines != 0 && !isUncovered(this.mouseDownGridX-1, this.mouseDownGridY-1) 
+//									&& !this.hasMine(this.mouseDownGridX-1, this.mouseDownGridY-1))
+//		{
+//			surroundingMines[this.mouseDownGridX][this.mouseDownGridY] = numberOfMines;
+//		}
+		//***********************REMOVE SOON***********************************
+		
+		//Loop draws numbers on squares
+		for(int x = 0; x <= 9; x++)
+		{
+			for(int y = 0; y <= 9; y++)
+			{
+				if(surroundingMines[x][y] != 0)
+				{
+					//(29,30) coordinates for the inside of the top left white square
+					//+45 to skip the gray squares
+					g.setColor(Color.GREEN);
+					g.drawString("" + surroundingMines[x][y], (x*29)+45, (y*30)+45);
+				}
+			}
+		}
+		
+
+	}
+	
+	/**
+	 * Checks if the square contains a mine.
+	 * @param x Row value
+	 * @param y Column value
+	 * @return Returns true if the square contains a mine and false if it doesn't
+	 */
+	public boolean hasMine(int x, int y)
+	{
+		if(this.squaresWithMines[x][y] == 1)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if the square has already been uncovered.
+	 * @param x Row value
+	 * @param y Column value
+	 * @return Returns true if the square was previously uncovered and false if it wasn't
+	 */
+	public boolean isUncovered(int x, int y)
+	{
+		if(this.uncoveredSquares[x][y] == 1)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if the are any mines surrounding the selected square.
+	 * @param x Row value
+	 * @param y Column value
+	 * @return Returns true if there are adjacent mines and false if not
+	 */
+	public int hasSurroundingMines(int x, int y)
+	{
+		/*
+		 * Como todavia estoy usando los gray cells, en vez de el limite menor ser 0, es 1
+		 * Ver como poder usar 'hasMine' to return true instead of doing that aparte
+		 */
+		
+		int mines = 0;
+		//Loops checks if there are mines in any the of adjacent squares
+		for(int i = x-1; i <= x+1; i++)
+		{
+			for(int j = y-1; j <= y+1; j++)
+			{
+				if(i > 0 && i <= 9 && j > 0 && j <= 9)
+				{
+					if(this.hasMine(i-1, j-1))
+					{
+						mines++;
+					}
+				}
+			}
+		}
+
+		if(mines != 0 && !this.hasMine(x-1, y-1))
+		{
+			surroundingMines[x][y] = mines;
+		}
+		
+		return mines;
+	}
+	
+	/**
+	 * Uncovers the selected square.
+	 * @param x Row value
+	 * @param y Column value
+	 */
+	public void uncover(int x, int y)
+	{
+		if(!isUncovered(x, y))
+		{
+			this.uncoveredSquares[x][y] = 1;
+		}
+	}
+
+	/**
+	 * Uncovers all surrounding squares if none of them have mines.
+	 * @param x Row value
+	 * @param y Column value
+	 */
+	public void uncoverAdjancentSquares(int x, int y)
+	{
+			for(int i = x-1; i <= x+1; i++)
+			{
+				for(int j = y-1; j <= y+1; j++)
+				{
+					if(i > 0 && i <= 9 && j > 0 && j <= 9)
+					{
+						this.colorArray[i][j] = Color.GRAY; //Colors squares gray
+						this.uncover(i-1,j-1); //Marks the square as uncovered
+						this.repaint();
+						
+						//Checks and returns how many mines are around the newly uncovered square
+						this.hasSurroundingMines(i, j);
+					}
+				}
+			}
+	}
+
+	/**
+	 * Exits the program if all safe squares were uncovered.
+	 * @param safeSuqareCounter The number of uncovered squares
+	 */
+	public void gameWon(int safeSuqareCounter)
+	{
+		if(safeSuqareCounter == NUMBER_SAFE_SQUARES)
+		{
+			JOptionPane.showMessageDialog(null, "YOU WIN!");
+			System.exit(0);
+		}
+	}
+
+	/**
+	 * Exits the program if a mine was pressed and uncovers all remaining squares.
+	 */
+	public void gameLost()
+	{
+		//Uncovers every square
+		for(int x = 1; x <= 9; x++)
+		{
+			for(int y = 1; y <= 9; y++)
+			{
+				Color squareColor = Color.GRAY;
+				if(this.hasMine(x-1, y-1))
+				{
+					squareColor = Color.BLACK;
+				}
+				this.colorArray[x][y] = squareColor;
+				this.repaint();
+			}
+		}
+		
+		//Displays lost message and exits program
+		JOptionPane.showMessageDialog(null, "YOU LOSE!");
+		
+		//Stops the program
+		System.exit(0);
 	}
 
 	public int getGridX(int x, int y) 

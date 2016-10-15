@@ -5,11 +5,20 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 
+/**
+ * The MyMouseAdapter class executes different methods from the MyPanel class after pressing
+ * the squares displayed on the frame.
+ * @author Axviel Benitez Dorta & Ariel Silva Troche
+ *
+ */
 public class MyMouseAdapter extends MouseAdapter 
 {
-	Color newColor = null; //Maybe move back down?
-	int safeSuqareCounter = 0; //Holds how many safe cells have been uncovered
+	private Color newColor = null; 
+	private int safeSuqareCounter = 0; //Holds how many safe cells have been uncovered
 
+	/**
+	 * A mouse button was pressed.
+	 */
 	public void mousePressed(MouseEvent e) 
 	{
 		Component c;
@@ -83,6 +92,9 @@ public class MyMouseAdapter extends MouseAdapter
 		}
 	}
 
+	/**
+	 * A mouse button was released.
+	 */
 	public void mouseReleased(MouseEvent e) 
 	{
 		Component c;
@@ -145,11 +157,10 @@ public class MyMouseAdapter extends MouseAdapter
 					{
 						//Released the mouse button on the same cell where it was pressed
 
-						//Presses on gray cells
+						//Pressed a gray square
 						if ((myPanel.mouseDownGridX == 0) || (myPanel.mouseDownGridY == 0))
 						{
 							//Do nothing
-							System.out.println("Left clicked in a gray cell.");
 						}
 						//Pressed a mine
 						else if (myPanel.hasMine(myPanel.mouseDownGridX-1, myPanel.mouseDownGridY-1))
@@ -159,50 +170,42 @@ public class MyMouseAdapter extends MouseAdapter
 							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = newColor;
 							myPanel.repaint();
 
-							System.out.println("Square has mine.");
-
 							//Displays lost message and ends game
-							myPanel.gameLost();  
+							myPanel.gameLost();  //**********UNCOMMENT****************
 						}
 						//Square has no mine
 						else 
 						{
-							//On the grid other than on the left column and on the top row:
-							//Checks if square was already uncovered
+							//If the square was already uncovered
 							if(myPanel.isUncovered(myPanel.mouseDownGridX-1, myPanel.mouseDownGridY-1))
 							{
 								//Do nothing
-								System.out.println("Square was already uncovered");
 							}
+							//If it was not uncovered
 							else
 							{
-								//Marks square as uncovered
-								myPanel.uncover(myPanel.mouseDownGridX-1, myPanel.mouseDownGridY-1);
-
 								this.newColor = Color.GRAY;
 
+								//Uncovers the square
 								myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = newColor;
 								myPanel.repaint();
+								
+								//Marks the square as uncovered
+								myPanel.uncover(myPanel.mouseDownGridX-1, myPanel.mouseDownGridY-1);
 
-								System.out.println("Square is safe.");
-
-								//Checks if there are mines around the uncovered square
-								if(myPanel.hasSurroundingMines(myPanel.mouseDownGridX, myPanel.mouseDownGridY))
+								//Prints how many mines are surrounding the square
+								int surroundingMines = myPanel.hasSurroundingMines(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
+								System.out.println("Surrounding mines: " + surroundingMines);
+								
+								//Uncovers adjacent squares if there are no mines
+								if(surroundingMines == 0)
 								{
-									System.out.println("Has mine(s) around it.");
-								}
-								else
-								{
-									System.out.println("No mine(s) around it.");
 									myPanel.uncoverAdjancentSquares(myPanel.mouseDownGridX, myPanel.mouseDownGridY);
 								}
 
-								safeSuqareCounter++;
-								System.out.println(this.safeSuqareCounter); //temp
-
+								safeSuqareCounter++; //Keeps count of the number of uncovered squares
 								//Check if all safe squares have been uncovered and wins if they are
-								//myPanel.gameWon(safeSuqareCounter); ********UNCOMMENT
-									
+								myPanel.gameWon(safeSuqareCounter); //*********UNCOMMENT*********
 							}
 						}
 					}
@@ -238,7 +241,6 @@ public class MyMouseAdapter extends MouseAdapter
 			{
 				//Had pressed outside
 				//Do nothing
-				System.out.println("Right clicked outside.");
 			}
 			else 
 			{
@@ -246,7 +248,6 @@ public class MyMouseAdapter extends MouseAdapter
 				{
 					//Is releasing outside
 					//Do nothing
-					System.out.println("Released outside.");
 				} 
 				else 
 				{
@@ -254,7 +255,6 @@ public class MyMouseAdapter extends MouseAdapter
 					{
 						//Released the mouse button on a different cell where it was pressed
 						//Do nothing
-						System.out.println("Released on a gray cell.");
 					} 
 					else 
 					{
@@ -264,27 +264,21 @@ public class MyMouseAdapter extends MouseAdapter
 						{
 							//Pressed outside or on the gray cells
 							//Do nothing
-							System.out.println("Right clicked in a gray cell.");
 						}
 						//Right click flags possible mines with red color
 						else
 						{
+							//Checks if the square was already uncovered
 							if(myPanel.isUncovered(myPanel.mouseDownGridX-1, myPanel.mouseDownGridY-1))
 							{
-								//Do nothing
-								System.out.println("CANNOT FLAG: Square was already uncovered");
+								//Do nothing since it already is uncovered
 							}
 							else
 							{
-								//On the grid other than on the left column and on the top row:
-								this.newColor = Color.RED;
+								this.newColor = Color.RED; //The color red represents a flag
 
 								myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = newColor;
 								myPanel.repaint();
-
-								//****************************************************************
-								System.out.println("Square flagged.");
-								//****************************************************************
 							}
 						}
 					}
